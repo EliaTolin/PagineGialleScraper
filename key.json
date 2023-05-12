@@ -1,0 +1,30 @@
+{
+  "citta": [
+    "milano",
+  ],
+  "keyword": [
+    "ristorante",
+    "panetteria",
+    "autotrasporti",
+    "abbigliamento",
+    "elettricista",
+    "carozzeria",
+    "meccanico",
+    "idraulico",
+    "caldaia",
+    "pub",
+    "muratore",
+    "ferramenta",
+    "agenzia_viaggi",
+    "vivaio",
+    "macelleria",
+    "parrucchiere",
+    "estetista",
+    "carpenteria",
+    "pasticceria",
+    "pizzeria",
+    "serramentistica",
+    "trattoria",
+    "osteria"
+  ]
+}
