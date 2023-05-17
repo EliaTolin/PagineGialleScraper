@@ -68,7 +68,7 @@ def from_config_file(arguments):
     for citta in config['citta']:
         for keyword in config['keyword']:
             print("SCRAPING IN {0} PER {1}".format(citta, keyword))
-            scraper(arguments.output, arguments.regione, citta, keyword, True, args.exclude_no_email)
+            scraper(arguments.output, arguments.regione, citta, keyword, True, arguments.exclude_no_email)
             time.sleep(3)
 
 
@@ -79,7 +79,6 @@ def clear_file(file_name):
     output_filename = "{0}_cleaned.csv".format(os.path.splitext(file_name)[0])
     df.to_csv(output_filename, index=False)
     print("Salvato in {0}".format(output_filename))
-
 
 
 if __name__ == '__main__':

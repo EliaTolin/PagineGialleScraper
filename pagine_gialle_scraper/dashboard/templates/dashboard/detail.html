@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block content %}
+{% load crispy_forms_tags %}
+<div class="pt-3 px-2 container-lg">
+    <!-- Card di stato della ricerca -->
+    <div class="card {% if search_leads.finished %}text-white bg-success{% else %}text-white bg-warning{% endif %} ">
+        <div class="card-header">
+            <h2>{{ search_leads.name }}</h2>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title"> {{ search_leads.get_status_string }}</h5>
+            <p class="card-text">Totali leads trovati: {{ len_leads }}</p>
+        </div>
+    </div>
+    <!-- FINISH-  Card di stato della ricerca -->
+    <br>
+    <!-- Card dei filtri -->
+    <div class="card">
+        <div class="card-header">
+            <h5>Filtri</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" action="{{ request.path }}">
+                {{ lead_filter.form.as_p }}
+                <button class="btn btn-primary text-white" type="submit">Filtra</button>
+            </form>
+        </div>
+    </div>
+    <!-- FINISH- Card dei filtri -->
+    <br>
+    <!-- Card dei risultati della ricerca -->
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center ">
+                <h5>Lista leads</h5>
+                <div>
+                    <a href="{{ request.path }}" class="btn btn-success">Aggiorna</a>
+                    {% if search_leads.finished %}
+                    <a href="{% url 'dashboard:delete_search' slug=search_leads.slug %}" class="btn btn-danger">Elimina
+                        ricerca</a>
+                    <button class="btn btn-info text-white" id="save-json-button">Salva ricerca json</button>
+                    <button class="btn btn-info text-white" id="save-csv-button">Salva ricerca .csv</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row wow fadeIn">
+                {% if leads %}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Nome</th>
+                            <th scope="col">Citta</th>
+                            <th scope="col">Tipo Attività</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Telefono</th>
+                        </tr>
+                    <tbody>
+                        {% for lead in leads %}
+                        <tr class="">
+                            <td>{{ lead.name }}</td>
+                            <td>{{ lead.city }}</td>
+                            <td>{{ lead.activity_type }}</td>
+                            <td>{{ lead.email }}</td>
+                            <td>{{ lead.telephone }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    </thead>
+                </table>
+                <!-- Aggiungi la paginazione -->
+                <div class="pagination justify-content-center" style="max-width: 100%;overflow-x: auto;">
+                    <ul class="pagination">
+                        {% if leads.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ leads.previous_page_number }}&{{ query_string }}">Precedente</a>
+                        </li>
+                        {% endif %}
+                        {% for page in list_pages_navigator %}
+                        {% if page == leads.number %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ page }}</span>
+                        </li>
+                        {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page }}&{{ query_string }}">{{ page }}</a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                        {% if leads.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ leads.next_page_number }}&{{ query_string }}">Successivo</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+                {% else %}
+                <p>Nessun leads da visualizzare</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!-- FINISH -  Card dei risultati della ricerca -->
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#save-json-button').click(function (event) {
+            event.preventDefault();
+            // Esegui la chiamata AJAX
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'dashboard:save_to_json_leads' slug=search_leads.slug %}",
+                data: {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                },
+                success: function (response) {
+                    var blob = new Blob([JSON.stringify(response)], { type: 'application/json' });
+                    var blobUrl = URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+                    a.href = blobUrl;
+                    a.download = '{{ search_leads.name }}' + '.json';
+                    a.style.display = 'none';
+                    document.body.appendChild(a);
+                    a.click();
+                    URL.revokeObjectURL(blobUrl);
+                },
+                error: function (xhr, status, error) {
+                    alert('Si è verificato un errore durante il salvataggio.');
+                }
+            });
+        });
+
+        $('form').submit(function () {
+            var form = $(this);
+            var url = form.attr('action');
+            var formData = form.serialize();
+            
+            $.ajax({
+                type: 'GET',
+                url: url,
+                data: formData,
+                success: function () {
+                    // Ricarica la pagina dopo aver applicato i filtri
+                    location.href = url + '?' + formData;
+                },
+                error: function (xhr, status, error) {
+                    alert('Si è verificato un errore durante il filtraggio.');
+                }
+            });
+            
+            return false;
+        });
+
+        $('#save-csv-button').click(function (event) {
+            event.preventDefault();
+            // Esegui la chiamata AJAX
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'dashboard:save_to_csv_leads' slug=search_leads.slug %}",
+                data: {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                },
+                success: function (response) {
+                    var blob = new Blob([response], { type: 'text/csv' });
+                    var blobUrl = URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+                    a.href = blobUrl;
+                    a.download = '{{ search_leads.name }}' + '.csv';
+                    a.style.display = 'none';
+                    document.body.appendChild(a);
+                    a.click();
+                    URL.revokeObjectURL(blobUrl);
+                },
+                error: function (xhr, status, error) {
+                    alert('Si è verificato un errore durante il salvataggio.');
+                }
+            });
+        });
+    });
+</script>
+{% endblock content %}

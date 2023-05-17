@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+{% load crispy_forms_tags %}
+<div class="pt-3 px-2">
+    <!--Contact form-->
+    <div class="card container-lg pt-2">
+        <form method="post">
+            {% csrf_token %}
+            {% crispy form %}
+        </form>
+        </br>
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,42 @@
+{
+    "city": [
+      "scandiano",
+      "modena",
+      "casalgrande",
+      "castellarano",
+      "montefiorino",
+      "reggio_nell_emilia",
+      "bologna",
+      "formigine",
+      "fiorano",
+      "spezzano",
+      "albinea",
+      "baggiovara",
+      "maranello"
+    ],
+    "activity_type": [
+      "ristorante",
+      "panetteria",
+      "autotrasporti",
+      "abbigliamento",
+      "elettricista",
+      "carozzeria",
+      "meccanico",
+      "idraulico",
+      "caldaia",
+      "pub",
+      "muratore",
+      "ferramenta",
+      "agenzia_viaggi",
+      "vivaio",
+      "macelleria",
+      "parrucchiere",
+      "estetista",
+      "carpenteria",
+      "pasticceria",
+      "pizzeria",
+      "serramentistica",
+      "trattoria",
+      "osteria"
+    ]
+  }
