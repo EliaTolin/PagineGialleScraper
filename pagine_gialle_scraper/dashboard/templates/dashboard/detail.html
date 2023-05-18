@@ -10,6 +10,11 @@
         <div class="card-body">
             <h5 class="card-title"> {{ search_leads.get_status_string }}</h5>
             <p class="card-text">Totali leads trovati: {{ len_leads }}</p>
+            <h5>Opzioni di ricerca: </h5>
+            <p class="card-text"><h6>Città di ricerca:</h6>{{ search_options.city }}</p>
+            <p class="card-text"><h6>Tipo di attività:</h6>{{ search_options.activity_type }}</p>
+            <p class="card-text"><h6>Regione:</h6>{{ search_options.region }}</p>
+            <p class="card-text"><h6>Escludi email:</h6>{{ search_options.exclude_no_email }}</p>
         </div>
     </div>
     <!-- FINISH-  Card di stato della ricerca -->

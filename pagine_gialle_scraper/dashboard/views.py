@@ -36,7 +36,7 @@ def search_form(request, json_data=None):
             initial_data['activity_type'] = ', '.join(activity_type)
         except json.JSONDecodeError:
             return HttpResponse("Errore: I dati JSON non sono validi.")
- 
+    initial_data['region'] = request.user.region
     form = SearchForms(request.POST or None, initial=initial_data)
     if request.method == 'POST' and form.is_valid():
         search = form.save()
@@ -98,7 +98,8 @@ class SearchLeadsDetail(generic.DetailView):
                    'len_leads':len_leads,
                    'list_pages_navigator': list_pages_navigator,
                    'lead_filter': lead_filter,
-                   'query_string':query_string
+                   'query_string':query_string,
+                   'search_options':search_leads.search_options,
                    }
         return context
 

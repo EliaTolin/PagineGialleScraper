@@ -77,7 +77,7 @@ class SearchLeads(models.Model):
             data['activity_type'] = l.activity_type
             result.append(data)
         
-        return data
+        return result
     
     def __str__(self):
         return self.name.replace(" ", "_")
