@@ -4,6 +4,8 @@ from django.db import models
 from django.urls import reverse
 from django.core import serializers
 
+from accounts.models import UserProfile
+
 header = ['nome', 'email', 'telefono', 'citta', 'via', 'tipo_attivita']
 
 
@@ -39,6 +41,7 @@ class Lead(models.Model):
         return self.name.replace(" ", "_")
 
 class SearchLeads(models.Model):
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     name = models.CharField("Nome", max_length=200)
     slug = AutoSlugField(populate_from='search_date',
                          unique=True)

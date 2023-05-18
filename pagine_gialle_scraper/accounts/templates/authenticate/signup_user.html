@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+<div class="pt-3 px-2 container-lg">
+    <div class="card">
+        <div class="card-header">
+            <h5>Registrazione</h5>
+        </div>
+        <div class="card-body">
+            {% if form.errors %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>Errore, verifica i requisiti!</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn btn-primary text-white" type="submit">Registrati</button>
+        </form>
+        </div>
+    </div>
+    </br>
+</div>
+{% endblock content %}

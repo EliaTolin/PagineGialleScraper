@@ -1,8 +1,35 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Login</h2>
-<form method="post">
-    {% csrf_token %}
-    <button class="btn btn-primary text-white" type="submit">Login</button>
-</form>
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+<div class="pt-3 px-2 container-lg">
+    <div class="card">
+        <div class="card-header">
+            <h5>Login</h5>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="inputUsername" class="form-label">Username</label>
+                    <input type="text" name="username" class="form-control" id="inputUsername" aria-describedby="emailHelp">
+                    <div id="emailHelp" class="form-text">Inserisci il tuo username.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="inputPassword" class="form-label">Password</label>
+                    <input type="password" name="password" class="form-control" id="inputPassword">
+                </div>
+                <button class="btn btn-primary text-white" type="submit">Login</button>
+                <a href="{% url 'accounts:signup_user' %}" class="btn btn-success text-white">Registrati</a>
+            </form>
+        </div>
+    </div>
+</br>
+</div>
 {% endblock content %}

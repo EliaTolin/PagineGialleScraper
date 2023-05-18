@@ -1,20 +1,16 @@
 import json
-import os
-from django.http import FileResponse, HttpResponse, HttpResponseRedirect, JsonResponse
-from django.urls import reverse
+from django.http import  HttpResponse, JsonResponse
 from django.views import generic
 from django.shortcuts import render, get_object_or_404, redirect
-
 from dashboard.filters import LeadFilter
-
 from .task.celery_tasks import *
 from .forms import SearchForms
 from .models import *
 from datetime import datetime
 from django.core.cache import cache
 import pandas as pd
-import tempfile
 from django.core.paginator import Paginator
+from django.core.exceptions import PermissionDenied
 
 def index(request):
     if request.method == 'POST' and request.FILES.get('json_file'):
@@ -24,7 +20,7 @@ def index(request):
         cache.set('json_data', json_data)
         return redirect('dashboard:search_form')
 
-    last_search = SearchLeads.objects.all()
+    last_search = SearchLeads.objects.filter(user=request.user)
     context = {'form': SearchForms(), 'last_search': last_search}
     return render(request, 'dashboard/index.html', context)
 
@@ -48,7 +44,8 @@ def search_form(request, json_data=None):
             name=search.name,
             search_date=datetime.now(),
             search_options=search,
-            finished=False
+            finished=False,
+            user=request.user
         )
         search_leads.save()
         start_search(search_leads.slug)
@@ -63,6 +60,8 @@ class SearchLeadsDetail(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         search_leads = SearchLeads.objects.get(slug=self.kwargs['slug'])
+        if search_leads.user != self.request.user:
+            raise PermissionDenied("Accesso negato")
         leads = search_leads.lead_set.all()
         lead_filter = LeadFilter(self.request.GET, queryset=leads,leads=leads)
         if self.request.GET:
@@ -102,14 +101,18 @@ class SearchLeadsDetail(generic.DetailView):
                    'query_string':query_string
                    }
         return context
-    
+
 def delete_search(request, slug):
     search_leads = get_object_or_404(SearchLeads, slug=slug)
+    if search_leads.user != request.user:
+        return HttpResponse("Non hai i permessi per visualizzare questa pagina.")
     search_leads.delete()
     return redirect('dashboard:index')
 
 def save_to_json_leads(request, slug):
     search_leads = get_object_or_404(SearchLeads, slug=slug)
+    if search_leads.user != request.user:
+        return HttpResponse("Non hai i permessi per visualizzare questa pagina.")
     data = search_leads.serialize_leads_to_json()
         # Crea una risposta HTTP con il contenuto JSON
     response = JsonResponse(data, content_type='application/json',safe=False)
@@ -118,6 +121,8 @@ def save_to_json_leads(request, slug):
 
 def save_to_csv_leads(request, slug):
     search_leads = get_object_or_404(SearchLeads, slug=slug)
+    if search_leads.user != request.user:
+        return HttpResponse("Non hai i permessi per visualizzare questa pagina.")
     data = search_leads.serialize_leads_to_dict()
     df = pd.DataFrame(data)
     data_csv = df.to_csv(index=False)

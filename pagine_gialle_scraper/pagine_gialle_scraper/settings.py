@@ -66,8 +66,6 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         "DIRS": [
                 os.path.join(BASE_DIR, 'templates'),
-                os.path.join(BASE_DIR, 'accounts/templates'),
-                os.path.join(BASE_DIR, 'dashboard/templates'),
             ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -120,7 +118,9 @@ Q_CLUSTER = {
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'it-it'
+
+AUTH_USER_MODEL = 'accounts.UserProfile'
 
 TIME_ZONE = 'UTC'
 
@@ -145,3 +145,5 @@ CELERY_TIMEZONE = 'UTC'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL = '/accounts/login_user'
