@@ -3,6 +3,7 @@ from django.http import  HttpResponse, JsonResponse
 from django.views import generic
 from django.shortcuts import render, get_object_or_404, redirect
 from dashboard.filters import LeadFilter
+from dashboard.helper_leads import serialize_leads_to_dict, serialize_leads_to_json
 from .task.celery_tasks import *
 from .forms import SearchForms
 from .models import *
@@ -129,8 +130,8 @@ def save_to_json_leads(request, slug):
     search_leads = get_object_or_404(SearchLeads, slug=slug)
     if search_leads.user != request.user:
         return HttpResponse("Non hai i permessi per visualizzare questa pagina.")
-    data = search_leads.serialize_leads_to_json()
-        # Crea una risposta HTTP con il contenuto JSON
+    data = serialize_leads_to_json(search_leads.lead_set.all())
+    # Crea una risposta HTTP con il contenuto JSON
     response = JsonResponse(data, content_type='application/json',safe=False)
     response['Content-Disposition'] = 'attachment; filename="{0}.json"'.format(search_leads.name)
     return response
@@ -139,7 +140,10 @@ def save_to_csv_leads(request, slug):
     search_leads = get_object_or_404(SearchLeads, slug=slug)
     if search_leads.user != request.user:
         return HttpResponse("Non hai i permessi per visualizzare questa pagina.")
-    data = search_leads.serialize_leads_to_dict()
+    leads = search_leads.lead_set.all()
+    lead_filter = LeadFilter(request.GET, queryset=leads,leads=leads)
+    leads = lead_filter.qs
+    data = serialize_leads_to_dict(leads)
     df = pd.DataFrame(data)
     data_csv = df.to_csv(index=False)
     response = HttpResponse(data_csv, content_type='text/csv')

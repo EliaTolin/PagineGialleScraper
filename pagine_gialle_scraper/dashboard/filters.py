@@ -1,6 +1,19 @@
 from django import forms
 import django_filters
 from .models import Lead
+from enum import Enum
+
+class CustomBooleanFilter(django_filters.BooleanFilter):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.extra['widget'] = forms.Select(
+            attrs={'class': 'form-control'},
+            choices=[
+                ('', 'Tutto'),
+                (True, 'Solo preferiti'),
+                (False, 'Solo non preferiti')
+            ]
+        )
 
 class LeadFilter(django_filters.FilterSet):
     city = django_filters.ChoiceFilter(
@@ -16,6 +29,8 @@ class LeadFilter(django_filters.FilterSet):
         label='Attività',
         widget=forms.Select(attrs={'class': 'form-control'})
     )
+    
+    star = CustomBooleanFilter(label='Preferiti')
 
     def __init__(self, *args, **kwargs):
         leads = kwargs.pop('leads', None)
@@ -25,7 +40,7 @@ class LeadFilter(django_filters.FilterSet):
             cities = leads.values_list('city', flat=True).distinct().order_by('city')
             self.filters['city'].field.choices = [(city, city) for city in cities]
             self.filters['activity_type'].field.choices = [(activity, activity) for activity in activity_type]
-
+        
     class Meta:
         model = Lead
-        fields = ['city','activity_type']
+        fields = ['city','activity_type', 'star']

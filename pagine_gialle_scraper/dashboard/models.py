@@ -49,37 +49,7 @@ class SearchLeads(models.Model):
     search_date = models.DateTimeField(primary_key=True)
     finished = models.BooleanField(default=False)
     search_options = models.ForeignKey(SearchOptions, on_delete=models.DO_NOTHING, null=True)
-    
-    def serialize_leads_to_json(self):
-        leads = Lead.objects.filter(search_leads=self)
-        result = []
-        for l in leads:
-            data = {}
-            data['name'] = l.name
-            data['email'] = l.email
-            data['telephone'] = l.telephone
-            data['city'] = l.city
-            data['address'] = l.address
-            data['activity_type'] = l.activity_type
-            result.append(data)
-        
-        return json.dumps(result)
-    
-    def serialize_leads_to_dict(self):
-        leads = Lead.objects.filter(search_leads=self)
-        result = []
-        for l in leads:
-            data = {}
-            data['name'] = l.name
-            data['email'] = l.email
-            data['telephone'] = l.telephone
-            data['city'] = l.city
-            data['address'] = l.address
-            data['activity_type'] = l.activity_type
-            result.append(data)
-        
-        return result
-    
+
     def __str__(self):
         return self.name.replace(" ", "_")
     

@@ -128,7 +128,7 @@
             // Esegui la chiamata AJAX
             $.ajax({
                 type: 'POST',
-                url: "{% url 'dashboard:save_to_json_leads' slug=search_leads.slug %}",
+                url: "{% url 'dashboard:save_to_json_leads' slug=search_leads.slug %}?{{ query_string }}",
                 data: {
                     'csrfmiddlewaretoken': '{{ csrf_token }}',
                 },
@@ -175,7 +175,7 @@
             // Esegui la chiamata AJAX
             $.ajax({
                 type: 'POST',
-                url: "{% url 'dashboard:save_to_csv_leads' slug=search_leads.slug %}",
+                url: "{% url 'dashboard:save_to_csv_leads' slug=search_leads.slug %}?{{ query_string }}",
                 data: {
                     'csrfmiddlewaretoken': '{{ csrf_token }}',
                 },
