@@ -48,7 +48,7 @@ def search_form(request, json_data=None):
             user=request.user
         )
         search_leads.save()
-        start_search(search_leads.slug)
+        start_search(search_leads.slug,search.exclude_no_email)
         return redirect("dashboard:index")
 
     context = {'form': form}
@@ -67,7 +67,7 @@ class SearchLeadsDetail(generic.DetailView):
         if self.request.GET:
             leads = lead_filter.qs
 
-        paginator = Paginator(leads, 20)
+        paginator = Paginator(leads, 25)
         page_number = self.request.GET.get('page')
         leads = paginator.get_page(page_number)
         
@@ -108,6 +108,21 @@ def delete_search(request, slug):
     if search_leads.user != request.user:
         return HttpResponse("Non hai i permessi per visualizzare questa pagina.")
     search_leads.delete()
+    return redirect('dashboard:index')
+
+def delete_lead(request, slug):
+    lead = get_object_or_404(Lead, slug=slug)
+    if lead.search_leads.user  != request.user:
+        return HttpResponse("Non hai i permessi per visualizzare questa pagina.")
+    lead.delete()
+    return redirect('dashboard:index')
+
+def star_lead(request, slug):
+    lead = get_object_or_404(Lead, slug=slug)
+    if lead.search_leads.user  != request.user:
+        return HttpResponse("Non hai i permessi per visualizzare questa pagina.")
+    lead.star = not lead.star
+    lead.save()
     return redirect('dashboard:index')
 
 def save_to_json_leads(request, slug):

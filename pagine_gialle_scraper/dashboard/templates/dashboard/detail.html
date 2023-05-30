@@ -11,10 +11,14 @@
             <h5 class="card-title"> {{ search_leads.get_status_string }}</h5>
             <p class="card-text">Totali leads trovati: {{ len_leads }}</p>
             <h5>Opzioni di ricerca: </h5>
-            <p class="card-text"><h6>Città di ricerca:</h6>{{ search_options.city }}</p>
-            <p class="card-text"><h6>Tipo di attività:</h6>{{ search_options.activity_type }}</p>
-            <p class="card-text"><h6>Regione:</h6>{{ search_options.region }}</p>
-            <p class="card-text"><h6>Escludi email:</h6>{{ search_options.exclude_no_email }}</p>
+            <p class="card-text">
+            <h6>Città di ricerca:</h6>{{ search_options.city }}</p>
+            <p class="card-text">
+            <h6>Tipo di attività:</h6>{{ search_options.activity_type }}</p>
+            <p class="card-text">
+            <h6>Regione:</h6>{{ search_options.region }}</p>
+            <p class="card-text">
+            <h6>Escludi email:</h6>{{ search_options.exclude_no_email }}</p>
         </div>
     </div>
     <!-- FINISH-  Card di stato della ricerca -->
@@ -69,6 +73,12 @@
                             <td>{{ lead.activity_type }}</td>
                             <td>{{ lead.email }}</td>
                             <td>{{ lead.telephone }}</td>
+                            <td>
+                                <button class="btn {% if lead.star %} btn-primary {% else %} btn-outline-primary {% endif %} star-button" data-id="{{ lead.slug }}"><i class="fa fa-star"></i></button>
+                            </td>
+                            <td>
+                                <button class="btn btn-outline-danger delete-button" data-id="{{ lead.slug }}">X</button>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -79,7 +89,8 @@
                     <ul class="pagination">
                         {% if leads.has_previous %}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ leads.previous_page_number }}&{{ query_string }}">Precedente</a>
+                            <a class="page-link"
+                                href="?page={{ leads.previous_page_number }}&{{ query_string }}">Precedente</a>
                         </li>
                         {% endif %}
                         {% for page in list_pages_navigator %}
@@ -95,7 +106,8 @@
                         {% endfor %}
                         {% if leads.has_next %}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ leads.next_page_number }}&{{ query_string }}">Successivo</a>
+                            <a class="page-link"
+                                href="?page={{ leads.next_page_number }}&{{ query_string }}">Successivo</a>
                         </li>
                         {% endif %}
                     </ul>
@@ -141,7 +153,7 @@
             var form = $(this);
             var url = form.attr('action');
             var formData = form.serialize();
-            
+
             $.ajax({
                 type: 'GET',
                 url: url,
@@ -154,7 +166,7 @@
                     alert('Si è verificato un errore durante il filtraggio.');
                 }
             });
-            
+
             return false;
         });
 
@@ -180,6 +192,50 @@
                 },
                 error: function (xhr, status, error) {
                     alert('Si è verificato un errore durante il salvataggio.');
+                }
+            });
+        });
+
+        // Gestisci il click sul pulsante "X"
+        $('.delete-button').click(function () {
+            var slugLead = $(this).data('id'); // Ottieni l'ID dell'oggetto
+            var csrfToken = '{{ csrf_token }}'; // Ottieni il token CSRF
+
+            // Esegui la chiamata AJAX per eliminare l'oggetto
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'dashboard:delete_lead' slug=0 %}".replace('0', slugLead), // Genera correttamente l'URL con l'ID dell'oggetto
+                data: {
+                    'csrfmiddlewaretoken': csrfToken
+                },
+                success: function (response) {
+                    // Aggiorna la pagina o esegui altre azioni
+                    location.reload(); // Esempio: ricarica la pagina dopo l'eliminazione
+                },
+                error: function (xhr, status, error) {
+                    alert('Si è verificato un errore durante l\'eliminazione.');
+                }
+            });
+        });
+
+          // Gestisci il click sul pulsante "X"
+        $('.star-button').click(function () {
+            var slugLead = $(this).data('id'); // Ottieni l'ID dell'oggetto
+            var csrfToken = '{{ csrf_token }}'; // Ottieni il token CSRF
+
+            // Esegui la chiamata AJAX per eliminare l'oggetto
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'dashboard:star_lead' slug=0 %}".replace('0', slugLead), // Genera correttamente l'URL con l'ID dell'oggetto
+                data: {
+                    'csrfmiddlewaretoken': csrfToken
+                },
+                success: function (response) {
+                    // Aggiorna la pagina o esegui altre azioni
+                    location.reload(); // Esempio: ricarica la pagina dopo l'eliminazione
+                },
+                error: function (xhr, status, error) {
+                    alert('Si è verificato un errore durante l\'eliminazione.');
                 }
             });
         });

@@ -5,5 +5,5 @@ from accounts.models import UserProfile
 # Register your models here.
 @admin.register(UserProfile)
 class CustomerAdmin(UserAdmin):
-    list_display = ('username','first_name','last_name','email','address','phone')
-    fieldsets = UserAdmin.fieldsets + (('Extra fields', {'fields': ('address', 'phone')}),)
+    list_display = ('username','first_name','last_name','email','region','phone')
+    fieldsets = UserAdmin.fieldsets + (('Extra fields', {'fields': ('region', 'phone')}),)

@@ -9,6 +9,7 @@ from dashboard.helper_leads import clear_search_leads_duplicate
 def scraper_task(self, *args, **kwargs):
     try:
         search_leads = SearchLeads.objects.get(slug=kwargs['slug'])
+        exclude_no_email = kwargs['exclude_no_email']
         search_options = search_leads.search_options
         
         list_city = search_options.get_city_list()
@@ -24,15 +25,15 @@ def scraper_task(self, *args, **kwargs):
                     lead = Lead.objects.create(name= lead.name, email=lead.email, telephone=lead.telephone, city=lead.city,\
                         address=lead.address, activity_type=lead.activity_type, search_leads=search_leads)
                     lead.save()
-                    
-        clear_search_leads_duplicate(search_leads)
+        if exclude_no_email:      
+            clear_search_leads_duplicate(search_leads)
         search_leads.finished = True
         search_leads.save()
     except Exception as e:
         exc_info = e
         raise e
     
-def start_search(slug):
-    task = scraper_task.delay(slug=slug)
+def start_search(slug,exclude_no_email):
+    task = scraper_task.delay(slug=slug,exclude_no_email=exclude_no_email)
     print(task.status)
     
