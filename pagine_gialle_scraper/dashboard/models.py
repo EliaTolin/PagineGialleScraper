@@ -34,6 +34,7 @@ class Lead(models.Model):
     activity_type = models.CharField(max_length=200, null=True)
     search_leads = models.ForeignKey('SearchLeads', on_delete=models.CASCADE, null=True)
     star = models.BooleanField(default=False)
+    contacted = models.BooleanField(default=False)
     
     class Meta:
         ordering = ['name']

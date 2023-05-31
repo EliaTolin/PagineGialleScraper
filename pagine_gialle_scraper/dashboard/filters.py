@@ -3,15 +3,27 @@ import django_filters
 from .models import Lead
 from enum import Enum
 
-class CustomBooleanFilter(django_filters.BooleanFilter):
+class StarredBooleanFilter(django_filters.BooleanFilter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.extra['widget'] = forms.Select(
             attrs={'class': 'form-control'},
             choices=[
-                ('', 'Tutto'),
+                ('', 'Tutti'),
                 (True, 'Solo preferiti'),
                 (False, 'Solo non preferiti')
+            ]
+        )
+        
+class ContactedBooleanFilter(django_filters.BooleanFilter):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.extra['widget'] = forms.Select(
+            attrs={'class': 'form-control'},
+            choices=[
+                ('', 'Tutti'),
+                (True, 'Solo contattati'),
+                (False, 'Solo non contattati')
             ]
         )
 
@@ -30,7 +42,9 @@ class LeadFilter(django_filters.FilterSet):
         widget=forms.Select(attrs={'class': 'form-control'})
     )
     
-    star = CustomBooleanFilter(label='Preferiti')
+    star = StarredBooleanFilter(label='Preferiti')
+    
+    contacted = ContactedBooleanFilter(label='Contattati')
 
     def __init__(self, *args, **kwargs):
         leads = kwargs.pop('leads', None)
@@ -43,4 +57,4 @@ class LeadFilter(django_filters.FilterSet):
         
     class Meta:
         model = Lead
-        fields = ['city','activity_type', 'star']
+        fields = ['city','activity_type', 'star', 'contacted']

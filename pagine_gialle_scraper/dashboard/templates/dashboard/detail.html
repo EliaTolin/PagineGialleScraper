@@ -74,10 +74,13 @@
                             <td>{{ lead.email }}</td>
                             <td>{{ lead.telephone }}</td>
                             <td>
+                                <button class="btn {% if lead.contacted %} btn-success {% else %} btn-outline-success {% endif %} contacted-button" data-id="{{ lead.slug }}"><i class="fa fa-check"></i></button>
+                            </td>
+                            <td>
                                 <button class="btn {% if lead.star %} btn-primary {% else %} btn-outline-primary {% endif %} star-button" data-id="{{ lead.slug }}"><i class="fa fa-star"></i></button>
                             </td>
                             <td>
-                                <button class="btn btn-outline-danger delete-button" data-id="{{ lead.slug }}">X</button>
+                                <button class="btn btn-outline-danger delete-button" data-id="{{ lead.slug }}"><i class="fa fa-trash"></i></button></button>
                             </td>
                         </tr>
                         {% endfor %}
@@ -227,6 +230,28 @@
             $.ajax({
                 type: 'POST',
                 url: "{% url 'dashboard:star_lead' slug=0 %}".replace('0', slugLead), // Genera correttamente l'URL con l'ID dell'oggetto
+                data: {
+                    'csrfmiddlewaretoken': csrfToken
+                },
+                success: function (response) {
+                    // Aggiorna la pagina o esegui altre azioni
+                    location.reload(); // Esempio: ricarica la pagina dopo l'eliminazione
+                },
+                error: function (xhr, status, error) {
+                    alert('Si è verificato un errore durante l\'eliminazione.');
+                }
+            });
+        });
+
+        // Gestisci il click sul pulsante "X"
+        $('.contacted-button').click(function () {
+            var slugLead = $(this).data('id'); // Ottieni l'ID dell'oggetto
+            var csrfToken = '{{ csrf_token }}'; // Ottieni il token CSRF
+
+            // Esegui la chiamata AJAX per eliminare l'oggetto
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'dashboard:contacted_lead' slug=0 %}".replace('0', slugLead), // Genera correttamente l'URL con l'ID dell'oggetto
                 data: {
                     'csrfmiddlewaretoken': csrfToken
                 },

@@ -13,4 +13,5 @@ urlpatterns = [
     path('save_to_json_leads/<slug:slug>', login_required(views.save_to_json_leads), name='save_to_json_leads'),
     path('save_to_csv_leads/<slug:slug>', login_required(views.save_to_csv_leads), name='save_to_csv_leads'),
     path('star_lead/<slug:slug>/', login_required(views.star_lead), name='star_lead'),
+    path('contacted_lead/<slug:slug>/', login_required(views.contacted_lead), name='contacted_lead'),
 ]

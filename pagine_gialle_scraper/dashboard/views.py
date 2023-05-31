@@ -126,6 +126,14 @@ def star_lead(request, slug):
     lead.save()
     return redirect('dashboard:index')
 
+def contacted_lead(request, slug):
+    lead = get_object_or_404(Lead, slug=slug)
+    if lead.search_leads.user  != request.user:
+        return HttpResponse("Non hai i permessi per visualizzare questa pagina.")
+    lead.contacted = not lead.contacted
+    lead.save()
+    return redirect('dashboard:index')
+
 def save_to_json_leads(request, slug):
     search_leads = get_object_or_404(SearchLeads, slug=slug)
     if search_leads.user != request.user:
